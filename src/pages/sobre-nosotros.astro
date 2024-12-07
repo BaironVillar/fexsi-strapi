@@ -1,0 +1,89 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const valores = [
+    {
+        titulo: "Calidad",
+        descripcion: "Compromiso con la excelencia en cada proyecto y servicio que realizamos.",
+        icon: "⭐"
+    },
+    {
+        titulo: "Seguridad",
+        descripcion: "Prioridad máxima en la seguridad de nuestros trabajadores y procesos.",
+        icon: "🛡️"
+    },
+    {
+        titulo: "Innovación",
+        descripcion: "Constante actualización en tecnologías y métodos de trabajo.",
+        icon: "💡"
+    },
+    {
+        titulo: "Compromiso",
+        descripcion: "Dedicación total a la satisfacción de nuestros clientes.",
+        icon: "🤝"
+    }
+];
+---
+
+<Layout title="Fexsi Spa - Sobre Nosotros">
+    <section class="w-full py-12 md:py-20 bg-white">
+        <div class="container mx-auto px-6 max-w-[1440px]">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 text-[#00263b]">
+                        Sobre Nosotros
+                    </h1>
+                    <p class="text-xl text-gray-700 mb-6">
+                        Somos una empresa líder en servicios de calderería, maestranza y obras generales, con más de una década de experiencia sirviendo a la industria chilena.
+                    </p>
+                    <p class="text-xl text-gray-700">
+                        Nuestro equipo altamente calificado y nuestra infraestructura de última generación nos permiten ofrecer soluciones integrales y de alta calidad para cada proyecto.
+                    </p>
+                </div>
+                <div class="relative h-[400px] rounded-lg overflow-hidden shadow-xl">
+                    <img 
+                        src="https://via.placeholder.com/800x600" 
+                        alt="Instalaciones Fexsi" 
+                        class="w-full h-full object-cover"
+                    />
+                </div>
+            </div>
+
+            <div class="mt-20">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 text-[#00263b]">
+                    Nuestros Valores
+                </h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {valores.map((valor) => (
+                        <div class="bg-white p-6 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-2 border-[#00263b] text-center">
+                            <span class="text-4xl mb-4 block">{valor.icon}</span>
+                            <h3 class="text-2xl font-bold mb-4 text-[#00263b]">{valor.titulo}</h3>
+                            <p class="text-gray-700">{valor.descripcion}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div class="mt-20 grid lg:grid-cols-2 gap-12">
+                <div class="bg-white p-8 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-2 border-[#00263b]">
+                    <h2 class="text-2xl font-bold mb-6 text-[#00263b]">Nuestra Misión</h2>
+                    <p class="text-lg text-gray-700">
+                        Satisfacer los requerimientos de trabajos de metalmecánica ingeniería, máquinas herramientas, estructuras y obras civiles en general del sector industrial y minero, a través de un servicio rápido, de calidad y oportuno, entregado por un equipo técnico profesional calificado.
+                    </p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-2 border-[#00263b]">
+                    <h2 class="text-2xl font-bold mb-6 text-[#00263b]">Nuestra Visión</h2>
+                    <p class="text-lg text-gray-700">
+                        Convertirnos en la principal empresa metalmecánica industrial de la segunda región, consolidándonos como líderes de nuestro rubro en el sector industrial y minero. Destacándonos por entregar a nuestros clientes soluciones rápidas y oportunas con la mejor tecnología, calidad técnico-profesional y equipamiento.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-16 text-center">
+                <a href="/contactanos" class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-[#fd7d1d] rounded-lg hover:bg-[#e66c0f] transition-colors duration-300">
+                    Trabaja con Nosotros
+                </a>
+            </div>
+        </div>
+    </section>
+</Layout>

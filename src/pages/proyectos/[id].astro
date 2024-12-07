@@ -1,0 +1,97 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getProjects } from '../../lib/strapi';
+
+export const prerender = true;
+
+const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://localhost:1337';
+
+interface StrapiProject {
+  id: number;
+  title: string;
+  category: string;
+  description: { type: string; children: { text: string }[] }[];
+  image: { url: string };
+  client: string;
+  year: string;
+  services: string;
+}
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  console.log('Projects in getStaticPaths:', projects);
+  
+  if (!projects) return [];
+  
+  return projects.map((project: StrapiProject) => {
+    console.log('Mapping project:', project);
+    return {
+      params: { id: project.id.toString() },
+      props: { project }
+    };
+  });
+}
+
+type Props = {
+  project: StrapiProject;
+};
+
+const { project } = Astro.props;
+---
+
+<Layout title={`Fexsi Spa - ${project?.title || 'Proyecto no encontrado'}`}>
+  {project ? (
+    <section class="w-full py-12 md:py-20 bg-white">
+      <div class="container mx-auto px-6 max-w-[1440px]">
+        <div class="grid lg:grid-cols-2 gap-12">
+          <div class="relative h-[400px] lg:h-[600px]">
+            <img 
+              src={`${STRAPI_URL}${project.image.url}`}
+              alt={project.title}
+              class="w-full h-full object-cover rounded-lg"
+            />
+          </div>
+          <div>
+            <h1 class="text-4xl font-bold text-[#00263b] mb-4">{project.title}</h1>
+            <div class="flex gap-2 mb-6">
+              <span class="px-3 py-1 bg-[#00263b] text-white rounded-full">{project.category}</span>
+              <span class="px-3 py-1 bg-gray-100 text-[#00263b] rounded-full">{project.year}</span>
+            </div>
+            <div class="prose max-w-none">
+              <p>{project.description[0]?.children[0]?.text || ''}</p>
+            </div>
+            <div class="mt-8">
+              <h2 class="text-xl font-bold text-[#00263b] mb-2">Cliente</h2>
+              <p class="text-gray-700">{project.client}</p>
+            </div>
+            <div class="mt-8">
+              <h2 class="text-xl font-bold text-[#00263b] mb-2">Servicios</h2>
+              <div class="flex flex-wrap gap-2">
+                <span class="px-3 py-1 bg-gray-100 text-[#00263b] rounded-full">
+                  {project.services}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  ) : (
+    <section class="w-full py-20 bg-white min-h-[60vh] flex items-center">
+      <div class="container mx-auto px-6 max-w-[1440px] text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-[#00263b] mb-6">
+          Proyecto no encontrado
+        </h1>
+        <p class="text-xl text-gray-600 mb-8">
+          Lo sentimos, el proyecto que buscas no está disponible o ha sido removido.
+        </p>
+        <a 
+          href="/proyectos" 
+          class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-[#fd7d1d] rounded-lg hover:bg-[#e66c0f] transition-colors duration-300"
+        >
+          Ver todos los proyectos
+        </a>
+      </div>
+    </section>
+  )}
+</Layout> 

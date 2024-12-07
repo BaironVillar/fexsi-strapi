@@ -1,0 +1,173 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getProjects } from '../lib/strapi';
+
+interface Project {
+  id: number;
+  documentId: string;
+  title: string;
+  description: any[];
+  client: string;
+  year: string;
+  services: string;
+  featured: boolean;
+  image: {
+    id: number;
+    url: string;
+  };
+}
+
+const categories = [
+  'Calderería',
+  'Maestranza',
+  'Obras Generales',
+  'Montaje',
+  'Mantención'
+];
+
+const projects = await getProjects();
+console.log('Proyectos crudos:', projects);
+
+// No necesitamos filtrar ya que la estructura es plana
+const validProjects = projects;
+
+console.log('Proyectos válidos:', validProjects);
+---
+
+<Layout title="Fexsi Spa - Proyectos">
+  <section class="w-full py-12 md:py-20">
+    <div class="container mx-auto px-6 max-w-[1440px]">
+      <h1 class="text-4xl md:text-5xl font-bold mb-8 text-[#00263b]">
+        Nuestros Proyectos
+      </h1>
+
+      <!-- Filtros -->
+      <div class="flex flex-wrap gap-4 mb-12">
+        <button
+          class="category-filter px-6 py-2 rounded-full text-white bg-[#00263b] border-2 border-[#00263b] hover:bg-[#00263b] hover:text-white transition-all duration-300"
+          data-category="todos"
+        >
+          Todos
+        </button>
+        {categories.map((category: string) => (
+          <button
+            class="category-filter px-6 py-2 rounded-full text-[#00263b] border-2 border-[#00263b] hover:bg-[#00263b] hover:text-white transition-all duration-300"
+            data-category={category.toLowerCase()}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+
+      <!-- Grid de proyectos -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {validProjects.map((project: Project) => (
+          <article 
+            class="group bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+            data-category={project.services?.toLowerCase()}
+          >
+            <div class="relative h-[300px] overflow-hidden">
+              <img 
+                src={project.image?.url 
+                  ? `${import.meta.env.STRAPI_URL}${project.image.url}`
+                  : '/imagen-default.jpg'}
+                alt={project.title}
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div class="p-6">
+              <h2 class="text-xl font-bold text-[#00263b] mb-2">
+                {project.title}
+              </h2>
+              <p class="text-gray-600 mb-4 line-clamp-3">
+                {project.description[0]?.children[0]?.text || ''}
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <span class="px-4 py-1 bg-[#00263b] text-white rounded-full text-sm">
+                  {project.services}
+                </span>
+                <span class="px-4 py-1 bg-gray-100 text-[#00263b] rounded-full text-sm">
+                  {project.year}
+                </span>
+              </div>
+            </div>
+          </article>
+        ))}
+
+        <!-- Mensaje cuando no hay proyectos en la categoría -->
+        <div 
+          class="hidden col-span-full py-16 text-center no-results"
+          style="display: none;"
+        >
+          <div class="max-w-md mx-auto">
+            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              No se encontraron proyectos
+            </h3>
+            <p class="text-gray-500">
+              No hay proyectos disponibles en esta categoría de servicios.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  function setupFilters() {
+    const buttons = document.querySelectorAll('.category-filter');
+    const projects = document.querySelectorAll('article');
+    const noResults = document.querySelector('.no-results');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const category = button.getAttribute('data-category');
+        let visibleProjects = 0;
+        
+        // Actualizar botones activos
+        buttons.forEach(btn => {
+          btn.classList.remove('bg-[#00263b]', 'text-white');
+          btn.classList.add('text-[#00263b]');
+        });
+        button.classList.add('bg-[#00263b]', 'text-white');
+        button.classList.remove('text-[#00263b]');
+
+        // Filtrar proyectos
+        projects.forEach(project => {
+          if (category === 'todos') {
+            project.style.display = 'block';
+            visibleProjects++;
+          } else {
+            const projectCategory = project.getAttribute('data-category');
+            if (projectCategory === category) {
+              project.style.display = 'block';
+              visibleProjects++;
+            } else {
+              project.style.display = 'none';
+            }
+          }
+        });
+
+        // Mostrar/ocultar mensaje de no resultados
+        if (noResults) {
+          (noResults as HTMLElement).style.display = visibleProjects === 0 ? 'block' : 'none';
+        }
+      });
+    });
+  }
+
+  // Setup inicial
+  setupFilters();
+  
+  // Setup después de navegación
+  document.addEventListener('astro:after-swap', setupFilters);
+</script>
+
+<style>
+  .category-filter.active {
+    @apply bg-[#00263b] text-white;
+  }
+</style>

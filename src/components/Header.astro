@@ -1,0 +1,133 @@
+---
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+    { href: '/', text: 'Inicio' },
+    { href: '/servicios', text: 'Servicios' },
+    { href: '/proyectos', text: 'Proyectos' },
+    { href: '/sobre-nosotros', text: 'Sobre nosotros' },
+];
+
+function isActive(href: string) {
+    if (href === '/') {
+        return currentPath === href;
+    }
+    return currentPath.startsWith(href);
+}
+---
+
+<header class="sticky w-full inset-x-0 top-0 z-20 bg-white shadow-md border-b">
+    <div class="flex items-center justify-between h-24 max-w-[1440px] mx-auto px-6">
+        <a href="/" class="flex items-center space-x-4">
+            <img src="/logo-fexsi.webp" class="w-16 h-16" alt="Logo Fexsi">
+            <span class="text-[#00263b] text-5xl font-bold whitespace-nowrap">Fexsi</span>
+        </a>
+        <nav class="hidden md:flex items-center space-x-12">
+            {navItems.map(item => (
+                <a
+                    href={item.href}
+                    class={`text-lg font-medium transition-colors duration-200 ${
+                        isActive(item.href) 
+                            ? "text-[#fd7d1d]" 
+                            : "text-[#00263b] hover:text-[#fd7d1d]"
+                    }`}
+                    aria-current={isActive(item.href) ? "page" : undefined}
+                >
+                    {item.text}
+                </a>
+            ))}
+            <a 
+                href="/contactanos"
+                class={`px-8 py-4 text-lg font-bold rounded-lg 
+                    ${isActive('/contactanos') 
+                        ? "bg-[#d03d41] text-white shadow-lg scale-105" 
+                        : "bg-[#fd7d1d] text-white hover:bg-[#d03d41]"
+                    }
+                    transition-all duration-300 ease-in-out
+                    hover:scale-105 hover:shadow-lg
+                    animate-pulse hover:animate-none
+                `}
+            >
+                Contáctanos
+            </a>
+        </nav>
+
+        <button 
+            id="menu-toggle" 
+            class="md:hidden p-2 rounded-md text-[#00263b] hover:bg-gray-100 focus:outline-none transition-transform duration-200 ease-in-out active:scale-125"
+        >
+            <div class="w-6 h-5 flex flex-col justify-between">
+                <span class="w-full h-0.5 bg-current transform transition-all duration-200"></span>
+                <span class="w-full h-0.5 bg-current transform transition-all duration-200"></span>
+                <span class="w-full h-0.5 bg-current transform transition-all duration-200"></span>
+            </div>
+        </button>
+    </div>
+    
+    <div id="mobile-menu" class="md:hidden h-0 overflow-hidden transition-all duration-300">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            {navItems.map(item => (
+                <a
+                    href={item.href}
+                    class={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                        isActive(item.href)
+                            ? "bg-[#00263b] text-white"
+                            : "text-[#00263b] hover:bg-gray-100"
+                    }`}
+                    aria-current={isActive(item.href) ? "page" : undefined}
+                >
+                    {item.text}
+                </a>
+            ))}
+            <a
+                href="/contactanos"
+                class="block px-3 py-3 mt-4 rounded-md text-base font-bold text-center bg-[#fd7d1d] text-white hover:bg-[#d03d41] transition-colors duration-200"
+            >
+                Contáctanos
+            </a>
+        </div>
+    </div>
+</header>
+
+<script>
+    function setupMobileMenu() {
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (menuToggle && mobileMenu) {
+            menuToggle.addEventListener('click', () => {
+                const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+                menuToggle.setAttribute('aria-expanded', (!isExpanded).toString());
+                
+                if (isExpanded) {
+                    mobileMenu.style.height = '0';
+                } else {
+                    mobileMenu.style.height = `${mobileMenu.scrollHeight}px`;
+                }
+                
+                // Rotar las barras del menú
+                const bars = menuToggle.querySelectorAll('span');
+                bars.forEach((bar, index) => {
+                    if (isExpanded) {
+                        bar.style.transform = '';
+                    } else {
+                        if (index === 0) bar.style.transform = 'rotate(45deg) translate(5px, 5px)';
+                        if (index === 1) bar.style.opacity = '0';
+                        if (index === 2) bar.style.transform = 'rotate(-45deg) translate(5px, -5px)';
+                    }
+                });
+            });
+        }
+    }
+
+    setupMobileMenu();
+    
+    document.addEventListener('astro:after-swap', setupMobileMenu);
+    
+    window.addEventListener('resize', () => {
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (window.innerWidth >= 768 && mobileMenu) {
+            mobileMenu.style.height = '0';
+        }
+    });
+</script>

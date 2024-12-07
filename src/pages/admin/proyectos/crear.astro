@@ -1,0 +1,32 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import ProjectForm from '../../../components/ProjectForm.astro';
+---
+
+<Layout title="Fexsi Spa - Nuevo Proyecto">
+  <section class="w-full py-8 sm:py-12 md:py-16 lg:py-24 bg-gradient-to-b from-gray-50 to-white">
+    <div class="container px-4 md:px-6 mx-auto max-w-[1440px]">
+      <div class="text-center mb-6 sm:mb-8 md:mb-10">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 text-[#00263b]">
+          Nuevo Proyecto
+        </h1>
+        <p class="text-lg sm:text-xl text-gray-600 mb-6 sm:mb-8">
+          Agrega un nuevo proyecto a la galería de Fexsi
+        </p>
+        <a 
+          href="/admin/proyectos" 
+          class="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#00263b] text-white rounded-lg hover:bg-[#003a5c] transition-colors mb-8 sm:mb-12 text-sm sm:text-base"
+        >
+          <span class="text-lg sm:text-xl">←</span>
+          <span>Volver a Proyectos</span>
+        </a>
+      </div>
+
+      <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-100">
+          <ProjectForm />
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout> 

@@ -1,0 +1,143 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getProjects } from '../../../lib/strapi';
+
+interface Project {
+  id: number;
+  documentId: string;
+  title: string;
+  description: any[];
+  client: string;
+  year: string;
+  services: string;
+  featured: boolean;
+  image: {
+    id: number;
+    url: string;
+  };
+}
+
+const services = [
+  'Calderería',
+  'Maestranza',
+  'Obras Generales',
+  'Montaje',
+  'Mantención'
+];
+
+const projects = await getProjects();
+---
+
+<Layout title="Fexsi Spa - Admin Proyectos">
+  <section class="w-full py-12 md:py-20">
+    <div class="container mx-auto px-6 max-w-[1440px]">
+      <h1 class="text-4xl font-bold text-[#00263b] mb-8">Administrar Proyectos</h1>
+
+      <!-- Filtros -->
+      <div class="flex flex-wrap gap-4 mb-12">
+        <button
+          class="service-filter px-6 py-2 rounded-full text-white bg-[#00263b] border-2 border-[#00263b] hover:bg-[#00263b] hover:text-white transition-all duration-300"
+          data-service="todos"
+        >
+          Todos
+        </button>
+        {services.map((service: string) => (
+          <button
+            class="service-filter px-6 py-2 rounded-full text-[#00263b] border-2 border-[#00263b] hover:bg-[#00263b] hover:text-white transition-all duration-300"
+            data-service={service.toLowerCase()}
+          >
+            {service}
+          </button>
+        ))}
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Card de Nuevo Proyecto -->
+        <a 
+          href="/admin/proyectos/crear"
+          class="flex flex-col items-center justify-center h-[400px] bg-white rounded-xl border-2 border-dashed border-gray-300 hover:border-[#00263b] hover:bg-gray-50 transition-all duration-300"
+        >
+          <div class="text-6xl text-gray-400 mb-4">+</div>
+          <p class="text-xl font-semibold text-gray-600">Agregar Nuevo Proyecto</p>
+        </a>
+
+        <!-- Proyectos Existentes -->
+        {projects.map((project: Project) => (
+          <article 
+            class="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100"
+            data-service={project.services?.toLowerCase()}
+          >
+            <div class="relative h-[200px] overflow-hidden">
+              <img 
+                src={project.image?.url 
+                  ? `${import.meta.env.STRAPI_URL}${project.image.url}`
+                  : '/imagen-default.jpg'}
+                alt={project.title}
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="p-6">
+              <h2 class="text-xl font-bold text-[#00263b] mb-2">
+                {project.title}
+              </h2>
+              <p class="text-gray-600 mb-4 line-clamp-2">
+                {project.description[0]?.children[0]?.text || ''}
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <span class="px-4 py-1 bg-[#00263b] text-white rounded-full text-sm">
+                  {project.services}
+                </span>
+                <span class="px-4 py-1 bg-gray-100 text-[#00263b] rounded-full text-sm">
+                  {project.year}
+                </span>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  function setupFilters() {
+    const buttons = document.querySelectorAll('.service-filter');
+    const projects = document.querySelectorAll('article');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const service = button.getAttribute('data-service');
+        
+        // Actualizar botones activos
+        buttons.forEach(btn => {
+          btn.classList.remove('bg-[#00263b]', 'text-white');
+          btn.classList.add('text-[#00263b]');
+        });
+        button.classList.add('bg-[#00263b]', 'text-white');
+        button.classList.remove('text-[#00263b]');
+
+        // Filtrar proyectos
+        projects.forEach(project => {
+          if (service === 'todos') {
+            project.style.display = 'block';
+          } else {
+            const projectService = project.getAttribute('data-service');
+            project.style.display = projectService === service ? 'block' : 'none';
+          }
+        });
+      });
+    });
+  }
+
+  // Setup inicial
+  setupFilters();
+  
+  // Setup después de navegación
+  document.addEventListener('astro:after-swap', setupFilters);
+</script>
+
+<style>
+  .service-filter.active {
+    @apply bg-[#00263b] text-white;
+  }
+</style>
